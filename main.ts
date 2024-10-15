@@ -1,22 +1,41 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+dotenv.config();
 import http from "http";
 import { Server as SocketIoServer } from "socket.io";
-import { getUsers, addUser, deleteUser } from "./utils/users";
+import socketIO from "./models/socket";
+import playerRouter from "./routes/player-route";
+import errorHandler from "./middlewares/error-handler";
+import roomRouter from "./routes/room-route";
+import swaggerUI from "swagger-ui-express";
+import swaggerDoc from "./utils/swaggerDoc";
+
+mongoose
+  .connect(process.env.MONGO_URI as string)
+  .then(() => console.log("DB connected successfully..."))
+  .catch((err: any) => console.log(err.message));
+
 const app = express();
+
+app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerDoc));
+app.use(express.json());
 
 const server = http.createServer(app);
 const io = new SocketIoServer(server);
 
 io.on("connection", (socket) => {
-  socket.on("name", (message: string) => {
-    addUser(message, socket.id);
-    io.emit("players", getUsers());
-  });
-  socket.on("disconnect", () => {
-    deleteUser(socket.id);
-    io.emit("players", getUsers());
-  });
+  const socketObject = new socketIO(socket, io);
+  socketObject.joinEvent();
+  socketObject.sendMessage();
 });
+
+app.use("/api/player", playerRouter);
+app.use("/api/room", roomRouter);
+app.use("*", (req, res) => {
+  res.send("this root is not exist");
+});
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 4000;
 
