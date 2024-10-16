@@ -12,6 +12,66 @@ const router = Router();
 
 /**
  * @swagger
+ * /api/room/getall:
+ *   get:
+ *     summary: Get all rooms
+ *     tags: [Room]
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *           example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
+ *     responses:
+ *       200:
+ *         description: All rooms returns successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   description: Response status ,always its true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     rooms:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                             description: Room Id
+ *                           roomName:
+ *                             type: string
+ *                             description: Room Name
+ *                         example:
+ *                           _id: 670e731d0f5fc1fcda0d4664
+ *                           roomName: heros
+ *       500:
+ *         description: The token is not valid any more
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   description: Response status ,always its false
+ *                 message:
+ *                   type: string
+ *                   description: Explanation of the error
+ *             example:
+ *               status: false
+ *               message: invalid token
+ */
+
+router.route("/getall").get(authentication,RoomControllers.getAllRooms)
+
+/**
+ * @swagger
  * /api/room/create:
  *   post:
  *     summary: Create new room

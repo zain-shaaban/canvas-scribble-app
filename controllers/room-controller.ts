@@ -119,4 +119,11 @@ export class RoomControllers {
     }
     throw new ApiError("this room is not exist", 500);
   });
+  static getAllRooms = asyncWrapper(async (req: MyRequest, res: Response) => {
+    const rooms = await Room.find({}, { roomName: true, _id: true });
+    res.json({
+      status: true,
+      data: {rooms},
+    });
+  });
 }
