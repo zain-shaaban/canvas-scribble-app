@@ -8,7 +8,7 @@ export class CreateRoomInputs {
 
   rounds: number;
 
-  private: boolean;
+  isPrivate: boolean;
 
   @Length(4, 10, { message: "Password should be between 4 and 10 character" })
   password: string;

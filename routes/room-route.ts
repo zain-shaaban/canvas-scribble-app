@@ -47,9 +47,21 @@ const router = Router();
  *                           roomName:
  *                             type: string
  *                             description: Room Name
+ *                           isPrivate:
+ *                             type: boolean
+ *                             description: Status of the room private or public, it's false by default
+ *                           rounds:
+ *                             type: number
+ *                             description: Game Rounds Number, it's 5 by default
+ *                           maxPlayers: 
+ *                             type: number
+ *                             description: maximum number of players in the room, it's 5 by default
  *                         example:
  *                           _id: 670e731d0f5fc1fcda0d4664
  *                           roomName: heros
+ *                           maxPlayers: 5
+ *                           rounds: 5
+ *                           isPrivate: true
  *       500:
  *         description: The token is not valid any more
  *         content:
@@ -123,12 +135,12 @@ router.route("/getall").get(authentication,RoomControllers.getAllRooms)
  *                 data:
  *                   type: object
  *                   properties:
- *                     authToken:
+ *                     roomToken:
  *                       type: string
- *                       description: Authentication token to verify the player
+ *                       description: Authentication token to access the room
  *             example:
  *               status: true
- *               data: {"roomId":670e731d0f5fc1fcda0d4664}
+ *               data: {"roomToken":eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I}
  *       500:
  *         description: The token is not valid any more
  *         content:
@@ -191,11 +203,14 @@ router.route("/create").post(authentication, RoomControllers.createRoom);
  *                   type: boolean
  *                   description: Response status ,always its true
  *                 data:
- *                   type: null
- *                   description: Data always null if join done successfully
+ *                   type: object
+ *                   properties:
+ *                     roomToken:
+ *                       type: string
+ *                       description: Authentication token to access the room
  *             example:
  *               status: true
- *               data: null
+ *               data: {"roomToken":eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I}
  *       500:
  *         description: The token is invalid or the password is wrong or the room is full of players
  *         content:

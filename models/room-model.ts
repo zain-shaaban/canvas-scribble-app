@@ -4,7 +4,7 @@ interface RoomDoc extends Document {
   roomName: string;
   maxPlayers: number;
   rounds: number;
-  private: boolean;
+  isPrivate: boolean;
   password: string;
   players: mongoose.Types.ObjectId[];
   owner: mongoose.Types.ObjectId;
@@ -25,7 +25,7 @@ const roomSchema = new mongoose.Schema({
     type: Number,
     default: 5,
   },
-  private: {
+  isPrivate: {
     type: Boolean,
     default: false,
   },

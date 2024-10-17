@@ -30,9 +30,10 @@ export class RoomControllers {
         ],
         500
       );
-    let { roomName, maxPlayers, rounds, password } = createInputs;
+    let { roomName, maxPlayers, rounds, password, isPrivate } = createInputs;
     password = bcrypt.hashSync(password, bcrypt.genSaltSync());
     const newRoom = await Room.create({
+      isPrivate,
       roomName,
       maxPlayers,
       rounds,
@@ -44,9 +45,7 @@ export class RoomControllers {
     });
     res.json({
       status: true,
-      data: { roomToken: token,
-        roomId:newRoom._id
-       },
+      data: { roomToken: token},
     });
   });
   static joinRoom = asyncWrapper(async (req: MyRequest, res: Response) => {
@@ -130,7 +129,7 @@ export class RoomControllers {
     throw new ApiError("this room is not exist", 500);
   });
   static getAllRooms = asyncWrapper(async (req: MyRequest, res: Response) => {
-    const rooms = await Room.find({}, { roomName: true, _id: true });
+    const rooms = await Room.find({},'_id roomName  maxPlayers rounds isPrivate');
     res.json({
       status: true,
       data: { rooms },
