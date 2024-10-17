@@ -1,10 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 dotenv.config();
 import http from "http";
 import { Server as SocketIoServer } from "socket.io";
-import socketIO from "./models/socket";
+import socketIO, { RoomAuthentication } from "./models/socket";
 import playerRouter from "./routes/player-route";
 import errorHandler from "./middlewares/error-handler";
 import roomRouter from "./routes/room-route";
@@ -26,10 +27,23 @@ app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 const server = http.createServer(app);
 const io = new SocketIoServer(server);
 
+app.get("/", (req, res) => {
+  res.render("index");
+});
+
 io.on("connection", (socket) => {
-  const socketObject = new socketIO(socket, io);
-  socketObject.joinEvent();
-  socketObject.sendMessage();
+  try {
+    const token = <string>socket.handshake.query.roomToken;
+    const { roomId } = <RoomAuthentication>(
+      jwt.verify(token, process.env.JWT_ROOM)
+    );
+    const socketObject = new socketIO(socket, io, roomId);
+    socketObject.joinEvent();
+    socketObject.sendMessage();
+  } catch (error) {
+    socket.emit("error", "invalid token");
+    socket.disconnect(true);
+  }
 });
 
 app.use("/api/player", playerRouter);

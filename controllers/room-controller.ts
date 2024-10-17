@@ -4,6 +4,7 @@ import { validate } from "class-validator";
 import ApiError from "../utils/ApiError";
 import Room from "../models/room-model";
 import asyncWrapper from "../middlewares/asyncWrapper";
+import jwt from "jsonwebtoken";
 import {
   CreateRoomInputs,
   DeleteRoomInputs,
@@ -38,9 +39,14 @@ export class RoomControllers {
       password,
       owner: req.playerId,
     });
+    const token = jwt.sign({ roomId: newRoom._id }, process.env.JWT_ROOM, {
+      expiresIn: 1000 * 60 * 60,
+    });
     res.json({
       status: true,
-      data: { roomId: newRoom._id },
+      data: { roomToken: token,
+        roomId:newRoom._id
+       },
     });
   });
   static joinRoom = asyncWrapper(async (req: MyRequest, res: Response) => {
@@ -60,10 +66,14 @@ export class RoomControllers {
     if (room.Auth(password)) {
       if (room.players.length < room.maxPlayers) {
         room.players.push(Object(req.playerId));
+
         await room.save();
+        const token = jwt.sign({ roomId: room._id }, process.env.JWT_ROOM, {
+          expiresIn: 1000 * 60 * 60,
+        });
         return res.json({
           status: true,
-          data: null,
+          data: { roomToken: token },
         });
       }
       throw new ApiError("The room is full of players", 500);
@@ -123,7 +133,7 @@ export class RoomControllers {
     const rooms = await Room.find({}, { roomName: true, _id: true });
     res.json({
       status: true,
-      data: {rooms},
+      data: { rooms },
     });
   });
 }
