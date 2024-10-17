@@ -294,7 +294,7 @@ router.route("/exit").patch(authentication, RoomControllers.exitRoom);
  * /api/room/delete:
  *   delete:
  *     summary: Delete the room, just who creates the room can delete it
- *     tags: [Player]
+ *     tags: [Room]
  *     parameters:
  *       - in: header
  *         name: Authorization
