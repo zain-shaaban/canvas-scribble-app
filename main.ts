@@ -21,6 +21,7 @@ mongoose
 const app = express();
 
 app.use(cors());
+app.set('view engine','ejs')
 app.use(express.json());
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 
@@ -34,12 +35,13 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
   try {
     const token = <string>socket.handshake.query.roomToken;
-    const { roomId } = <RoomAuthentication>(
+    const { roomId,playerId } = <RoomAuthentication>(
       jwt.verify(token, process.env.JWT_ROOM)
     );
-    const socketObject = new socketIO(socket, io, roomId);
+    const socketObject = new socketIO(socket, io, roomId,playerId);
     socketObject.joinEvent();
     socketObject.sendMessage();
+    socketObject.exitRoom()
   } catch (error) {
     socket.emit("error", "invalid token");
     socket.disconnect(true);

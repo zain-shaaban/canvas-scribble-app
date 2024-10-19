@@ -37,31 +37,32 @@ const router = Router();
  *                   type: object
  *                   properties:
  *                     rooms:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           _id:
- *                             type: string
- *                             description: Room Id
- *                           roomName:
- *                             type: string
- *                             description: Room Name
- *                           isPrivate:
- *                             type: boolean
- *                             description: Status of the room private or public, it's false by default
- *                           rounds:
- *                             type: number
- *                             description: Game Rounds Number, it's 5 by default
- *                           maxPlayers: 
- *                             type: number
- *                             description: maximum number of players in the room, it's 5 by default
- *                         example:
- *                           _id: 670e731d0f5fc1fcda0d4664
- *                           roomName: heros
- *                           maxPlayers: 5
- *                           rounds: 5
- *                           isPrivate: true
+ *                       type: object
+ *                       properties:
+ *                         46e9510a-b650-4989-89ab-d387800aa0d5:
+ *                           type: object
+ *                           properties:
+ *                             roomId:
+ *                               type: string
+ *                               description: Room Id
+ *                             roomName:
+ *                               type: string
+ *                               description: Room Name
+ *                             isPrivate:
+ *                               type: boolean
+ *                               description: Status of the room private or public, it's false by default
+ *                             rounds:
+ *                               type: number
+ *                               description: Game Rounds Number, it's 5 by default
+ *                             maxPlayers:
+ *                               type: number
+ *                               description: maximum number of players in the room, it's 5 by default
+ *                           example:
+ *                             roomId: 46e9510a-b650-4989-89ab-d387800aa0d5
+ *                             roomName: heros
+ *                             maxPlayers: 5
+ *                             rounds: 5
+ *                             isPrivate: true
  *       500:
  *         description: The token is not valid any more
  *         content:
@@ -80,7 +81,7 @@ const router = Router();
  *               message: invalid token
  */
 
-router.route("/getall").get(authentication,RoomControllers.getAllRooms)
+router.route("/getall").get(authentication, RoomControllers.getAllRooms);
 
 /**
  * @swagger
@@ -240,136 +241,4 @@ router.route("/create").post(authentication, RoomControllers.createRoom);
  */
 
 router.route("/join").patch(authentication, RoomControllers.joinRoom);
-
-/**
- * @swagger
- * /api/room/exit:
- *   patch:
- *     summary: Leaving the room
- *     tags: [Room]
- *     parameters:
- *       - in: header
- *         name: Authorization
- *         schema:
- *           type: string
- *           example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - roomId
- *             properties:
- *               roomId:
- *                 type: string
- *                 description: Room ID
- *           example:
- *             roomId: 670e731d0f5fc1fcda0d4664
- *     responses:
- *       200:
- *         description: leaving room done successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: boolean
- *                   description: Response status ,always its true
- *                 data:
- *                   type: null
- *                   description: Data always null if join done successfully
- *             example:
- *               status: true
- *               data: null
- *       500:
- *         description: The token is invalid
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: boolean
- *                   description: Response status ,always its false
- *                 message:
- *                   type: string
- *                   description: Explanation of the error
- *               example:
- *                 status: false
- *                 message: invalid token
- */
-
-router.route("/exit").patch(authentication, RoomControllers.exitRoom);
-
-/**
- * @swagger
- * /api/room/delete:
- *   delete:
- *     summary: Delete the room, just who creates the room can delete it
- *     tags: [Room]
- *     parameters:
- *       - in: header
- *         name: Authorization
- *         schema:
- *           type: string
- *           example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - roomId
- *             properties:
- *               roomId:
- *                 type: string
- *                 description: the Room Id
- *             example:
- *               roomId: 670e731d0f5fc1fcda0d4664
- *     responses:
- *       202:
- *         description: The room has deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: boolean
- *                   description: Response status ,always its true
- *                 data:
- *                   type: null
- *                   description: No data returned
- *               example:
- *                 status: true
- *                 data: null
- *       500:
- *         description: The token is invalid or you are not the owner
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: boolean
- *                   description: Response status ,always its false
- *                 message:
- *                   type: string
- *                   description: Explanation of the error
- *             examples:
- *               you are not the owner:
- *                 value:
- *                   status: false
- *                   message: You are not the owner
- *               The token is wrong:
- *                 value:
- *                   status: false
- *                   message: invalid token
- */
-
-router.route("/delete").delete(authentication, RoomControllers.deleteRoom);
 export default router;
