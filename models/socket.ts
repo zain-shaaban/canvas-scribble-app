@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { rooms } from "../controllers/room-controller";
 import Player from "./player-model";
+import { Room } from "../dto/room-dto";
 
 export interface RoomAuthentication {
   iat: number;
@@ -10,15 +11,9 @@ export interface RoomAuthentication {
   roomId: string;
   playerId: string;
 }
-type roomPlayers = {
-  [key: string]: { playerId: string; socketId: string }[];
-};
-
-let players: roomPlayers = {};
-export { players };
 
 const getPlayersNames = async (roomId: string) => {
-  const allPlayers = players[roomId];
+  const allPlayers = rooms[roomId].players;
   let ids: Object[] = [];
   for (let player of allPlayers) {
     ids.push(Object(player.playerId));
@@ -38,11 +33,16 @@ export default class socketIO {
   ) {}
   async joinEvent() {
     if (rooms[this.roomId]) {
-      if (players[this.roomId].length < rooms[this.roomId].maxPlayers) {
-        players[this.roomId].push({
-          playerId: this.playerId,
-          socketId: this.socket.id,
-        });
+      if (rooms[this.roomId].players.length < rooms[this.roomId].maxPlayers) {
+        if (
+          !rooms[this.roomId].players.some((player) => {
+            return player.playerId == this.playerId;
+          })
+        )
+          rooms[this.roomId].players.push({
+            playerId: this.playerId,
+            socketId: this.socket.id,
+          });
         this.socket.join(this.roomId);
         return this.io
           .to(this.roomId)
@@ -52,22 +52,24 @@ export default class socketIO {
     }
     this.socket.emit("error", "this room is not exist");
   }
-  sendMessage() {
+  async sendMessage() {
+    const { username } = await Player.findById(this.playerId, "username -_id");
     this.socket.on("sendMessage", (message) => {
-      this.io.to(this.roomId).emit("send", message);
+      this.io.to(this.roomId).emit("send", { playerName: username, message });
     });
   }
   exitRoom() {
     this.socket.on("disconnect", async (reason) => {
-      players[this.roomId] = players[this.roomId].filter((player) => {
-        return player.socketId != this.socket.id;
-      });
-      if (players[this.roomId].length > 0) {
+      rooms[this.roomId].players = rooms[this.roomId].players.filter(
+        (player) => {
+          return player.socketId != this.socket.id;
+        }
+      );
+      if (rooms[this.roomId].players.length > 0) {
         return this.io
           .to(this.roomId)
           .emit("players", await getPlayersNames(this.roomId));
       } else {
-        delete players[this.roomId];
         delete rooms[this.roomId];
       }
     });

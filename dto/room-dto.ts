@@ -34,9 +34,10 @@ export class Room {
   public isPrivate: boolean;
   public maxPlayers: number;
   public rounds: number;
+  public players: { playerId: string; socketId: string }[];
   constructor(
     public roomId: string,
-    public roomName:string,
+    public roomName: string,
     public password: string,
     maxPlayers: number | undefined,
     rounds: number | undefined,
@@ -45,5 +46,6 @@ export class Room {
     this.maxPlayers = maxPlayers || 5;
     this.rounds = rounds || 5;
     this.isPrivate = isPrivate;
+    this.players = [];
   }
 }

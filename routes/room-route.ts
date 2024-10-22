@@ -57,12 +57,16 @@ const router = Router();
  *                             maxPlayers:
  *                               type: number
  *                               description: maximum number of players in the room, it's 5 by default
+ *                             players:
+ *                               type: number
+ *                               description: Number of players in the room
  *                           example:
  *                             roomId: 46e9510a-b650-4989-89ab-d387800aa0d5
  *                             roomName: heros
  *                             maxPlayers: 5
  *                             rounds: 5
  *                             isPrivate: true
+ *                             players: 3
  *       500:
  *         description: The token is not valid any more
  *         content:

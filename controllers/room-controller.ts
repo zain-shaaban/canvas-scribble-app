@@ -7,7 +7,6 @@ import jwt from "jsonwebtoken";
 import { CreateRoomInputs, JoinRoomInputs, Room } from "../dto/room-dto";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
-import { players } from "../models/socket";
 
 interface MyRequest extends Request {
   playerId: string;
@@ -42,7 +41,6 @@ export class RoomControllers {
       rounds,
       isPrivate
     );
-    players[roomId] = [];
     const token = jwt.sign(
       { roomId, playerId: req.playerId },
       process.env.JWT_ROOM,
@@ -55,7 +53,7 @@ export class RoomControllers {
       data: { roomToken: token },
     });
     const intervalID = setInterval(() => {
-      if (players[roomId].length > 0) {
+      if (rooms[roomId].players.length > 0) {
         clearInterval(intervalID);
         clearTimeout(timeoutID);
       }
@@ -116,6 +114,7 @@ export class RoomControllers {
       for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
           const { password, ...rest } = obj[key];
+          rest.players=rest.players.length
           result[key] = rest;
         }
       }
