@@ -21,16 +21,11 @@ mongoose
 const app = express();
 
 app.use(cors());
-app.set('view engine','ejs')
 app.use(express.json());
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 
 const server = http.createServer(app);
 const io = new SocketIoServer(server);
-
-app.get("/", (req, res) => {
-  res.render("index");
-});
 
 io.on("connection", (socket) => {
   try {

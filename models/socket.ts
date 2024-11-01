@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 dotenv.config();
 import { rooms } from "../controllers/room-controller";
 import Player from "./player-model";
-import { Room } from "../dto/room-dto";
 
 export interface RoomAuthentication {
   iat: number;
@@ -59,7 +58,7 @@ export default class socketIO {
     });
   }
   exitRoom() {
-    this.socket.on("disconnect", async (reason) => {
+    this.socket.on("disconnect", async () => {
       rooms[this.roomId].players = rooms[this.roomId].players.filter(
         (player) => {
           return player.socketId != this.socket.id;
