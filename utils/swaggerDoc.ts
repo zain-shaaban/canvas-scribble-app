@@ -7,7 +7,7 @@ const swaggerDefinition = {
     version: "1.0.0",
     description: "Paint Doc helps you to use Paint API",
   },
-  servers: [{ url: "https://closed-moored-evergreen.glitch.me" }],
+  servers: [{ url: "https://canvas-scribble-app-o65g.onrender.com" }],
 };
 
 const options = {
